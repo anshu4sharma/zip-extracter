@@ -7,12 +7,11 @@ type Props = {
 const ZipFileListItem = ({ file }: Props) => {
     const downloadFile = useCallback(
         async (file: ZipFile, fileName: string) => {
-            console.log("downlaod");
-
             try {
                 if (file) {
                     const content = await file.async("blob");
                     if (content) {
+                        // @ts-ignore
                         saveAs(content, fileName);
                     }
                 }
@@ -24,7 +23,7 @@ const ZipFileListItem = ({ file }: Props) => {
     )
 
     console.log("rendier");
-    
+
     const fileSize = useMemo(() => `${(file._data.uncompressedSize / 1024).toFixed(2)} KB`, [file._data.uncompressedSize])
     return (
         <tr key={file.name} className="scroll-snap-align-start bg-white dark:bg-gray-800">

@@ -1,7 +1,7 @@
-import Layout from '@/components/layout'
-import JSZip, { JSZipObject } from 'jszip';
-import React, { ChangeEvent, DragEvent, Suspense, useCallback, useState } from 'react'
-import { saveAs } from 'file-saver'
+import Layout from '@/components/layout';
+import JSZip from 'jszip';
+import { ChangeEvent, DragEvent, Suspense, useCallback, useState } from 'react';
+import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
 import { ZipFile } from '@/types';
 import dynamic from 'next/dynamic';
@@ -58,14 +58,13 @@ const Home = () => {
     [],
   )
 
-
   const displayZipFile = useCallback(
     async () => {
       if (selectedFile) {
         try {
-          const zip = await JSZip.loadAsync(selectedFile);
+          const zip = await JSZip.loadAsync(selectedFile)
+          // @ts-ignore
           setFilesList(Object.values(zip.files))
-          console.log(Object.values(zip.files));
         } catch (error) {
           toast.error("An error Occured")
         }
