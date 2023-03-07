@@ -1,17 +1,24 @@
 import Layout from '@/components/layout'
-import JSZip from 'jszip';
-import React, { ChangeEvent, DragEvent, useState } from 'react'
+import JSZip, { JSZipObject } from 'jszip';
+import React, { ChangeEvent, DragEvent, Suspense, useCallback, useState } from 'react'
 import { saveAs } from 'file-saver'
 import toast from 'react-hot-toast';
+import { ZipFile } from '@/types';
+import dynamic from 'next/dynamic';
+const ZipFileListItem = dynamic(() => import('@/components/ZipFileListItem'), {
+  ssr: false
+});
 const Home = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(); // Change the type of the state variable to File | null
-  const [filesList, setFilesList] = useState<string[]>([]);
+  const [filesList, setFilesList] = useState<ZipFile[]>([]);
   const handleFileInput = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files != null && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      console.log(file, "File");
-      console.log(URL.createObjectURL(file), "URL.createObjectURL(file)");
-      setSelectedFile(file);
+    try {
+      if (e.target.files != null && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        setSelectedFile(file);
+      }
+    } catch (error) {
+      toast.error("An Error Occured !")
     }
   };
 
@@ -32,38 +39,63 @@ const Home = () => {
     }
   };
 
-
-  const saveAsZip = async () => {
-    if (selectedFile) {
-      try {
-        const zip = await JSZip.loadAsync(selectedFile);
-        zip.forEach(async function (_relativePath, file) {
-          const content = await file.async("blob");
-          saveAs(content, file.name);
-          toast.success("Successfully unzipped!")
-        });
-      } catch (error) {
-        toast.error("An error Occured")
+  const saveAsZip = useCallback(
+    async (file: File | null | undefined) => {
+      if (file) {
+        try {
+          const zip = await JSZip.loadAsync(file);
+          zip.forEach(async function (_relativePath, file) {
+            const content = await file.async("blob");
+            saveAs(content, file.name);
+            toast.success("Successfully unzipped!")
+          });
+        } catch (error) {
+          toast.error("An error Occured")
+          console.log(error);
+        }
       }
-    }
-  };
+    },
+    [],
+  )
 
-  const displayZipFile = async () => {
-    if (selectedFile) {
-      try {
-        const zip = await JSZip.loadAsync(selectedFile);
-        const fileList = Object.keys(zip.files).map((filename) => filename);
-        setFilesList(fileList);
-      } catch (error) {
-        toast.error("An error Occured")
+
+  const displayZipFile = useCallback(
+    async () => {
+      if (selectedFile) {
+        try {
+          const zip = await JSZip.loadAsync(selectedFile);
+          setFilesList(Object.values(zip.files))
+          console.log(Object.values(zip.files));
+        } catch (error) {
+          toast.error("An error Occured")
+        }
       }
-    }
-  };
+    },
+    [selectedFile],
+  )
+
+  // const encryptZip = async (files, password) => {
+  //   const zip = new JSZip();
+  //   files.forEach((file) => {
+  //     zip.file(file.name, file);
+  //   });
+
+  //   const encrypted = await zip.generateAsync({
+  //     type: "blob",
+  //     compression: "DEFLATE",
+  //     compressionOptions: {
+  //       level: 1,
+  //     },
+  //     password: "password",
+  //   });
+
+  //   saveAs(encrypted, "encrypted.zip");
+  // };
 
   return (
     <Layout>
       <div className='flex flex-col items-center'>
-        <div className="flex items-center justify-center w-80 sm:w-full max-w-md flex-col">
+        <div className="flex items-center justify-center w-80 sm:w-full max-w-md flex-col relative">
           <label onDrop={handleDrop} onDragEnter={handleDragOver} onDragEnd={handleDragOver}
             onDragLeave={handleDragOver}
             onDragOver={(e) => e.preventDefault()} htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -83,20 +115,46 @@ const Home = () => {
                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
               </div>
             )}
-            <input id="dropzone-file" accept=".zip,.rar" type="file" onChange={handleFileInput} className="hidden" />
+            <input id="dropzone-file" accept=".zip,.rar" type="file" onChange={handleFileInput} className="hidden" multiple />
           </label>
         </div>
         <div className='flex flex-col justify-center items-center'>
-          <button type="button" onClick={saveAsZip} disabled={!selectedFile} className="text-white w-80 mt-4 max-w-md bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:opacity-50">UnZip File </button>
-          <button type="button" onClick={displayZipFile} disabled={!selectedFile} className="text-white w-80 mt-4 max-w-md bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:opacity-50">Display Content </button>
+          <button type="button" onClick={() => saveAsZip(selectedFile)} disabled={!selectedFile} className="text-white w-80 mt-4 max-w-md bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:opacity-50">UnZip File </button>
+          {selectedFile && <button type="button" onClick={displayZipFile} disabled={!selectedFile} className="text-white w-80 mt-4 max-w-md bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 disabled:opacity-50"> Show Files </button>}
         </div>
+        <Suspense fallback={<div>Loading...</div>}>
+          {
+            filesList.length > 0 && selectedFile && <div className="relative  overflow-x-scroll">
+              <div className=' scroll-snap-x-mandatory  scroll-snap-stop max-w-sm sm:max-w-3xl w-full '>
+                <table className="w-full mt-10 text-sm text-left text-gray-500 dark:text-gray-400">
+                  <thead className="bg-slate-50 w-full text-xs text-gray-700 capitalize tracking-wider">
+                    <tr>
+                      <th scope="col" className="px-6 py-3">
+                        File name
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        File name
+                      </th>
+                      <th scope="col" className="px-6 py-3">
+                        File name
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      filesList.map((file) => {
+                        return <ZipFileListItem key={file.name} file={file} />
+                      })
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          }
+        </Suspense>
 
       </div>
-      <ul>
-        {filesList.map((filename) => (
-          <li key={filename}>{filename}</li>
-        ))}
-      </ul>
+
     </Layout>
   )
 }
