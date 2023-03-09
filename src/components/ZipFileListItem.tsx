@@ -22,17 +22,15 @@ const ZipFileListItem = ({ file }: Props) => {
         [],
     )
 
-    console.log("rendier");
-
     const fileSize = useMemo(() => `${(file._data.uncompressedSize / 1024).toFixed(2)} KB`, [file._data.uncompressedSize])
     return (
-        <tr key={file.name} className="scroll-snap-align-start bg-white dark:bg-gray-800">
+        <tr key={file.name} className="text-left scroll-snap-align-start bg-white dark:bg-gray-800">
             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-pre-wrap dark:text-white break-words">
                 {file.name}
             </th>
             {
                 file.dir ? <td className="px-6 py-4 break-words">
-                    {file.name} is a Dir !
+                    Directory !
                 </td> : <td className="px-6 py-4">
                     {fileSize}
                 </td>
