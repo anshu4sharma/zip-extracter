@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-const sqarray = [...Array(9)];
 const App = () => {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [xIsNext, setXIsNext] = useState(true);
@@ -64,24 +63,25 @@ const App = () => {
     setXIsNext(true);
   };
 
-  const renderSquare = (i: number) => (
-    <button
-      className="bg-[#0d3b66] h-24 w-24 border-8 border-[#a0bedb] rounded-2xl  flex items-center justify-center text-6xl font-bold cursor-pointer hover:bg-[#0d2f50] transition-colors duration-300 ease-in-out text-[#fff]"
-      onClick={() => handleClick(i)}
-    >
-      {squares[i]}
-    </button>
-  );
-
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-[#0d2f50]">
       <audio ref={audioRef}>
         <source src="/sounds/sound.mp3" type="audio/mp3" />
       </audio>
-      <h1 className="text-4xl font-bold text-white mb-6">Tic Tac Toe</h1>
-      <div className="grid grid-cols-3 gap-10 bg-[#0d3b66] p-6 rounded-xl shadow-lg border-8 border-[#a0bedb]">
-        {sqarray.map((_, i) => {
-          return renderSquare(i);
+      <h1 className="text-4xl font-bold text-white mb-6 font-mono">
+        Tic Tac Toe
+      </h1>
+      <div className="grid grid-cols-3 gap-8 bg-[#0d3b66] p-6 max-w-[24rem] sm:max-w-md rounded-xl shadow-lg border-8 border-[#a0bedb]">
+        {squares.map((_, i) => {
+          return (
+            <button
+              key={i}
+              className="bg-[#0d3b66] h-20 w-20 sm:w-24 sm:h-24  border-8 border-[#a0bedb] rounded-2xl  flex items-center justify-center text-6xl font-bold cursor-pointer hover:bg-[#0d2f50] transition-colors duration-300 ease-in-out text-[#fff]"
+              onClick={() => handleClick(i)}
+            >
+              {squares[i]}
+            </button>
+          );
         })}
       </div>
       <p className="text-2xl font-bold text-white mt-6">{status}</p>
@@ -90,7 +90,7 @@ const App = () => {
           className="text-xl font-mono bg-white mt-6 p-4 rounded-xl cursor-pointer"
           onClick={handleReset}
         >
-          Restart Game !{" "}
+          Restart Game !
         </button>
       ) : null}
     </div>
