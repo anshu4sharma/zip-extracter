@@ -13,8 +13,8 @@ export default function Navbar() {
 
   const rightmenu = [
     {
-      label: "Contact",
-      href: "/contact",
+      label: "Tic Tac Toe",
+      href: "/tictac",
     },
   ];
 
@@ -39,7 +39,7 @@ export default function Navbar() {
                   ))}
                 </div>
                 <div className="flex items-center justify-between w-full md:w-auto">
-                  <Link href="/" className="w-full dark:hidden">
+                  <Link href="https://anshusharma.me/" target="_blank" className="w-full dark:hidden">
                     <Image
                       width={150}
                       height={100}
@@ -47,7 +47,7 @@ export default function Navbar() {
                       src={"/images/logo.png"}
                     />
                   </Link>
-                  <Link href="/" className="hidden dark:block">
+                  <Link href="https://anshusharma.me/" target="_blank" className="hidden dark:block">
                     <Image
                       width={150}
                       height={100}

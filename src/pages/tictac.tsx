@@ -1,3 +1,4 @@
+import Script from "next/script";
 import React, { useCallback, useMemo, useState } from "react";
 const App = () => {
   const [squares, setSquares] = useState(Array(9).fill(null));
@@ -64,36 +65,65 @@ const App = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#0d2f50]">
-      <audio ref={audioRef}>
-        <source src="/sounds/sound.mp3" type="audio/mp3" />
-      </audio>
-      <h1 className="text-4xl font-bold text-white mb-6 font-mono">
-        Tic Tac Toe
-      </h1>
-      <div className="grid grid-cols-3 gap-8 bg-[#0d3b66] p-6 max-w-[24rem] sm:max-w-md rounded-xl shadow-lg border-8 border-[#a0bedb]">
-        {squares.map((_, i) => {
-          return (
-            <button
-              key={i}
-              className="bg-[#0d3b66] h-20 w-20 sm:w-24 sm:h-24  border-8 border-[#a0bedb] rounded-2xl  flex items-center justify-center text-6xl font-bold cursor-pointer hover:bg-[#0d2f50] transition-colors duration-300 ease-in-out text-[#fff]"
-              onClick={() => handleClick(i)}
-            >
-              {squares[i]}
-            </button>
-          );
-        })}
+    <>
+      <Script
+        async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4780451799247980"
+        crossOrigin="anonymous"
+      />
+      <ins
+        className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-4780451799247980"
+        data-ad-slot="3837492401"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      ></ins>
+      <Script id="indexpagead">
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </Script>
+      <div className="flex flex-col items-center justify-center h-screen bg-[#0d2f50]">
+        <audio ref={audioRef}>
+          <source src="/sounds/sound.mp3" type="audio/mp3" />
+        </audio>
+        <h1 className="text-4xl font-bold text-white mb-6 font-mono">
+          Tic Tac Toe
+        </h1>
+        <div className="grid grid-cols-3 gap-8 bg-[#0d3b66] p-6 max-w-[24rem] sm:max-w-md rounded-xl shadow-lg border-8 border-[#a0bedb]">
+          {squares.map((_, i) => {
+            return (
+              <button
+                key={i}
+                className="bg-[#0d3b66] h-20 w-20 sm:w-24 sm:h-24  border-8 border-[#a0bedb] rounded-2xl  flex items-center justify-center text-6xl font-bold cursor-pointer hover:bg-[#0d2f50] transition-colors duration-300 ease-in-out text-[#fff]"
+                onClick={() => handleClick(i)}
+              >
+                {squares[i]}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-2xl font-bold text-white mt-6">{status}</p>
+        {winner || !squares.includes(null) ? (
+          <button
+            className="text-xl font-mono bg-white mt-6 p-4 rounded-xl cursor-pointer"
+            onClick={handleReset}
+          >
+            Restart Game !
+          </button>
+        ) : null}
       </div>
-      <p className="text-2xl font-bold text-white mt-6">{status}</p>
-      {winner || !squares.includes(null) ? (
-        <button
-          className="text-xl font-mono bg-white mt-6 p-4 rounded-xl cursor-pointer"
-          onClick={handleReset}
-        >
-          Restart Game !
-        </button>
-      ) : null}
-    </div>
+      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4780451799247980"
+        crossOrigin="anonymous" />
+      <ins className="adsbygoogle"
+        style={{ display: "block" }}
+        data-ad-client="ca-pub-4780451799247980"
+        data-ad-slot="3837492401"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <Script id="indexpagead">
+        (adsbygoogle = window.adsbygoogle || []).push({ });
+      </Script>
+    </>
   );
 };
 
